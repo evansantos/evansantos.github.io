@@ -21,7 +21,7 @@ class Link extends React.Component {
 
     if (internal) {
       return (
-        <GatsbyLink to={this.props.to}>{this.props.children()}</GatsbyLink>
+        <GatsbyLink to={this.props.to}>{this.props.children}</GatsbyLink>
       )
     }
 
