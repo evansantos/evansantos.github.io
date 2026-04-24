@@ -1,8 +1,8 @@
-# Project dependencies
-.cache
 node_modules
-yarn-error.log
-
-# Build directory
-/public
-.DS_Store
+dist
+.astro
+.env
+.env.*
+!.env.example
+public/terminal.*.json
+public/terminal.manifest.json

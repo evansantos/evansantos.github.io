@@ -1,0 +1,50 @@
+---
+title: "Debouncing in React: the pattern I always reach for"
+date: 2025-03-10
+lang: en
+tags: [react, performance, hooks]
+dek: "The naive version fires on every keystroke. The correct version waits until the user stops typing."
+featured: true
+draft: false
+---
+
+Debouncing is one of those things you implement three times before it sticks.
+
+The naive version fires on every keystroke. The correct version waits until the user stops typing. The difference matters for search inputs, API calls, and anything that runs on change.
+
+## The pattern
+
+```ts
+import { useCallback, useRef } from 'react';
+
+export function useDebounce<T extends (...args: unknown[]) => void>(
+  fn: T,
+  delay: number
+): T {
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  return useCallback(
+    (...args: Parameters<T>) => {
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => fn(...args), delay);
+    },
+    [fn, delay]
+  ) as T;
+}
+```
+
+Pass your handler and a delay in milliseconds. The hook returns a stable debounced version that only fires after the user pauses for the given duration.
+
+## Why useCallback matters here
+
+Without `useCallback`, the debounced function is recreated on every render — which resets the timer. The dependency array `[fn, delay]` keeps the reference stable as long as neither input changes.
+
+## When not to use this
+
+If you are on React 18+ and the expensive work is a render (not a side effect), `useTransition` is the better tool. It defers the update without introducing a delay.
+
+Debouncing is for side effects: API calls, analytics events, localStorage writes. Not for rendering.
+
+---
+
+If you find this useful, the [`use-debounce`](https://github.com/xnimorz/use-debounce) package does the same thing with more options. I roll my own to keep the dependency count low.

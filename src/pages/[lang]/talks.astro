@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import StaticLayout from '@layouts/StaticLayout.astro';
+import { formatDate } from '@lib/date';
+import type { Lang } from '@lib/locale';
+import { isValidLang } from '@lib/locale';
+
+export async function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'pt' } }];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+if (!isValidLang(lang)) return Astro.redirect('/en/talks');
+
+const talks = await getCollection('talks');
+const sorted = talks.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<StaticLayout title="Talks" lang={lang}>
+  <h1>Talks</h1>
+  {sorted.length === 0 ? (
+    <p class="empty-state">Talks coming soon.</p>
+  ) : (
+    <ul class="post-list">
+      {sorted.map(t => (
+        <li class="post-item">
+          <a href={t.data.url} target="_blank" rel="noopener">
+            <h2>{t.data.title}</h2>
+          </a>
+          <div class="post-meta">
+            <span>{t.data.venue}{t.data.location ? `, ${t.data.location}` : ''}</span>
+            <time datetime={t.data.date.toISOString().slice(0, 10)}>{formatDate(t.data.date, lang)}</time>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+  <a href="/?cmd=ls+talks" class="view-in-terminal">view in terminal</a>
+</StaticLayout>

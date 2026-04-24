@@ -1,0 +1,91 @@
+---
+import '@styles/global.css';
+import '@styles/static.css';
+import type { Lang } from '@lib/locale';
+import { getAlternateLang, getLangLabel } from '@lib/locale';
+
+interface Props {
+  title:        string;
+  description?: string;
+  lang:         Lang;
+  canonicalUrl?: string;
+  alternateUrl?: string;
+  ogImage?:     string;
+}
+
+const {
+  title,
+  description = 'Senior Front-End / Full-Stack Engineer. Brooklyn, NYC.',
+  lang,
+  canonicalUrl = Astro.url.href,
+  alternateUrl,
+  ogImage,
+} = Astro.props;
+
+const alternateLang = getAlternateLang(lang);
+const fullTitle = title === 'evandro.dev'
+  ? 'evandro.dev'
+  : `${title} — evandro.dev`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    <link rel="canonical" href={canonicalUrl} />
+
+    {alternateUrl && (
+      <>
+        <link rel="alternate" hreflang={lang}          href={canonicalUrl} />
+        <link rel="alternate" hreflang={alternateLang} href={alternateUrl} />
+        <link rel="alternate" hreflang="x-default"     href={`https://evandro.dev/en${new URL(canonicalUrl).pathname.replace(`/${lang}`, '')}`} />
+      </>
+    )}
+
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:title"       content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type"        content="website" />
+
+    <link rel="alternate" type="application/rss+xml"  title="evandro.dev blog (EN)" href="/rss/en.xml" />
+    <link rel="alternate" type="application/rss+xml"  title="evandro.dev blog (PT)" href="/rss/pt.xml" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        <nav aria-label="Site navigation">
+          <a href={`/${lang}`} class="site-name">evandro.dev</a>
+          <a href={`/${lang}/blog`}>Blog</a>
+          <a href={`/${lang}/projects`}>Projects</a>
+          <a href={`/${lang}/uses`}>Uses</a>
+          <a href={`/${lang}/about`}>About</a>
+          <a href="/" class="view-in-terminal" aria-label="Open terminal interface">~/</a>
+        </nav>
+      </header>
+
+      <main id="main-content" class="page-main">
+        <slot />
+      </main>
+
+      <footer class="page-footer">
+        <div class="footer-inner">
+          <span>since 2014 · <a href="https://github.com/evansantos/evandro.dev">source code</a></span>
+          <span>
+            {alternateUrl
+              ? <a href={alternateUrl}>{getLangLabel(alternateLang)}</a>
+              : <span>{getLangLabel(lang)}</span>
+            }
+          </span>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

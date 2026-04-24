@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import StaticLayout from '@layouts/StaticLayout.astro';
+import type { Lang } from '@lib/locale';
+import { isValidLang } from '@lib/locale';
+
+export async function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'pt' } }];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+if (!isValidLang(lang)) return Astro.redirect('/en/projects');
+
+const projects = await getCollection('projects');
+const sorted = projects.sort((a, b) => b.data.year - a.data.year);
+---
+
+<StaticLayout title="Projects" lang={lang}>
+  <h1>Projects</h1>
+  {sorted.length === 0 ? (
+    <p class="empty-state">Projects coming soon.</p>
+  ) : (
+    <ul class="post-list">
+      {sorted.map(p => (
+        <li class="post-item">
+          <h2>{p.data.title} <small>({p.data.year})</small></h2>
+          <p class="post-dek">{p.data.dek}</p>
+          {p.data.stack && <p class="post-meta"><code>{p.data.stack}</code></p>}
+          {p.data.url && <a href={p.data.url} target="_blank" rel="noopener">view project →</a>}
+        </li>
+      ))}
+    </ul>
+  )}
+  <a href="/?cmd=ls+projects" class="view-in-terminal">view in terminal</a>
+</StaticLayout>

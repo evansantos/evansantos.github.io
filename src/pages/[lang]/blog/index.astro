@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import StaticLayout from '@layouts/StaticLayout.astro';
+import { formatDate } from '@lib/date';
+import type { Lang } from '@lib/locale';
+import { isValidLang } from '@lib/locale';
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'pt' } },
+  ];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+
+if (!isValidLang(lang)) return Astro.redirect('/en/blog');
+
+const allPosts = await getCollection('blog', ({ data }) =>
+  data.lang === lang && !data.draft
+);
+
+const posts = allPosts.sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const alternateUrl = String(Astro.url).replace(`/${lang}/`, `/${lang === 'en' ? 'pt' : 'en'}/`);
+---
+
+<StaticLayout
+  title="Blog"
+  description="Writing about React, TypeScript, AI agents, and whatever is on my mind."
+  lang={lang}
+  alternateUrl={alternateUrl}
+>
+  <h1>Blog</h1>
+
+  {posts.length === 0 ? (
+    <p class="empty-state">No posts yet in this language.</p>
+  ) : (
+    <ul class="post-list">
+      {posts.map(post => {
+        const slug = post.id.replace(`${lang}/`, '');
+        return (
+          <li class="post-item">
+            <a href={`/${lang}/blog/${slug}`}>
+              <h2>{post.data.title}</h2>
+            </a>
+            <div class="post-meta">
+              <time datetime={post.data.date.toISOString().slice(0, 10)}>
+                {formatDate(post.data.date, lang)}
+              </time>
+              {post.data.readingTime && <span>{post.data.readingTime} min read</span>}
+              {post.data.tags.map(tag => (
+                <a href={`/${lang}/blog?tag=${tag}`} class="tag">{tag}</a>
+              ))}
+            </div>
+            <p class="post-dek">{post.data.dek}</p>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+
+  <noscript>
+    <p>This site works best with JavaScript enabled, but all content is available here.</p>
+  </noscript>
+</StaticLayout>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const tag = params.get('tag');
+  if (tag) {
+    document.querySelectorAll('.post-item').forEach(item => {
+      const tags = Array.from(item.querySelectorAll('.tag')).map(el => el.textContent?.trim());
+      if (!tags.includes(tag)) (item as HTMLElement).style.display = 'none';
+    });
+    const notice = document.createElement('p');
+    notice.className = 'filter-notice';
+    const prefix = document.createTextNode('Filtering by ');
+    const code = document.createElement('code');
+    code.textContent = tag;
+    const separator = document.createTextNode(' — ');
+    const clear = document.createElement('a');
+    clear.href = '?';
+    clear.textContent = 'clear';
+    notice.appendChild(prefix);
+    notice.appendChild(code);
+    notice.appendChild(separator);
+    notice.appendChild(clear);
+    document.querySelector('h1')?.after(notice);
+  }
+</script>
+
+<style>
+  .filter-notice { color: var(--color-fg-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+  .filter-notice code { background: var(--color-code-bg); padding: 0.1em 0.3em; border-radius: 3px; }
+</style>

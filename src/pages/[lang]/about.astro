@@ -1,0 +1,26 @@
+---
+import { getEntry, render } from 'astro:content';
+import StaticLayout from '@layouts/StaticLayout.astro';
+import type { Lang } from '@lib/locale';
+import { isValidLang } from '@lib/locale';
+
+export async function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'pt' } }];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+if (!isValidLang(lang)) return Astro.redirect('/en/about');
+
+const entry = await getEntry('about', `about/${lang}`);
+if (!entry) return Astro.redirect('/en/about');
+
+const { Content } = await render(entry);
+const alternateUrl = String(Astro.url).replace(`/${lang}/`, `/${lang === 'en' ? 'pt' : 'en'}/`);
+---
+
+<StaticLayout title="About" lang={lang} alternateUrl={alternateUrl}>
+  <Content />
+  <div class="view-in-terminal-wrap">
+    <a href="/?cmd=about" class="view-in-terminal">view in terminal</a>
+  </div>
+</StaticLayout>

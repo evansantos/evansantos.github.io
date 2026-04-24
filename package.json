@@ -1,0 +1,45 @@
+{
+  "name": "evandro-dev",
+  "version": "0.0.1",
+  "description": "evandro.dev — personal site with a terminal interface",
+  "engines": {
+    "node": ">=22"
+  },
+  "type": "module",
+  "scripts": {
+    "predev": "tsx scripts/build-fixture.ts && tsx scripts/emit-csp-hash.ts",
+    "prebuild": "tsx scripts/build-fixture.ts && tsx scripts/emit-csp-hash.ts",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "format": "oxfmt src",
+    "lint": "oxlint src",
+    "test": "poku tests/unit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/rss": "^4.0.0",
+    "astro": "^5.0.0",
+    "gray-matter": "^4.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@happy-dom/global-registrator": "^15.0.0",
+    "@pokujs/react": "^1.5.1",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "happy-dom": "^15.0.0",
+    "oxfmt": "0.2.0",
+    "oxlint": "0.15.0",
+    "poku": "^2.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.5.0"
+  }
+}

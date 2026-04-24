@@ -1,0 +1,39 @@
+---
+title: "The boring technology talk I keep having"
+date: 2025-09-02
+lang: en
+tags: [architecture, engineering-culture]
+dek: "Every team I've joined in the last three years had a conversation about switching to something newer. Here is what I say."
+draft: false
+---
+
+Every team I have joined in the last three years has had the same conversation. There is a technology the team is using — a queue, a database, a frontend framework — and someone on the team wants to replace it with something newer. The new thing is genuinely better in some ways. The conversation goes in circles for months.
+
+Here is what I say when I get pulled in.
+
+## The actual question
+
+The question is not "is the new thing better." It almost always is, in some dimension. The question is: "what does the migration cost, and is that cost worth the benefit we expect to get?"
+
+Migrations are almost always underestimated. You account for the technical work. You forget to account for:
+- The month after launch where two systems run in parallel and both need bug fixes
+- The edge cases that only show up in production, not in the migration test plan
+- The institutional knowledge that lived in the old system and has to be rebuilt
+
+## When I say yes
+
+Replace the technology when:
+- The current thing is actively preventing you from shipping things customers want
+- You have a specific, measurable problem that the new thing solves
+- You have the capacity to do it properly — not as a side project
+
+## When I say no
+
+Stay with the boring technology when:
+- The problem is mostly that it feels old
+- The team is excited about the new thing for its own sake
+- You are in the middle of something else important
+
+Boring technology that works is an asset. It is predictable. You know its failure modes. Your oncall knows how to debug it at 2am.
+
+That said — if the technology is actively causing harm, switch. Just do it with eyes open.
