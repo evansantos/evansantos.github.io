@@ -1,0 +1,16 @@
+:root,
+[data-theme="solarized"] {
+  --t-bg:          #002b36;
+  --t-bg-alt:      #073642;
+  --t-fg:          #93a1a1;
+  --t-fg-muted:    #93a1a180;
+  --t-fg-dim:      #93a1a133;
+  --t-accent:      #2aa198;
+  --t-error:       #dc322f;
+  --t-warning:     #b58900;
+  --t-success:     #859900;
+  --t-border:      #073642;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

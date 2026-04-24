@@ -15,6 +15,7 @@
     "format": "oxfmt src",
     "lint": "oxlint src",
     "test": "poku tests/unit",
+    "test:a11y": "poku tests/a11y",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^15.0.0",
+    "axe-core": "^4.10.0",
     "@pokujs/react": "^1.5.1",
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.0",

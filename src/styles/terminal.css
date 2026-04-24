@@ -207,3 +207,22 @@
 .terminal__pager-search { flex-shrink: 0; display: flex; align-items: center; padding: 0.35rem 1.5rem; border-top: 1px solid var(--t-border); }
 .terminal__pager-search-prefix { color: var(--t-fg); margin-right: 0.25rem; }
 .terminal__pager-search-input { flex: 1; background: transparent; border: none; outline: none; color: var(--t-fg); font-family: inherit; font-size: inherit; }
+
+/* ── Theme transition ─────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}

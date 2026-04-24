@@ -38,5 +38,8 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: A11y audit
+        run: pnpm test:a11y
+
       - name: Assert terminal fixture present
         run: test -f dist/terminal.manifest.json || echo "No terminal fixture yet — expected in M2"

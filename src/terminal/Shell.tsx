@@ -7,9 +7,11 @@ import InputLine from './components/InputLine.js';
 import Pager from './components/Pager.js';
 import { useHistory } from './hooks/useHistory.js';
 import { useVimMode } from './hooks/useVimMode.js';
+import { loadTheme, saveTheme, useStorageSync } from './hooks/useTheme.js';
+import { VISIBLE_THEMES } from './themes/registry.js';
 import type { Result, ShellState } from './core/types.js';
 import '../styles/terminal.css';
-import './themes/styles/matrix.css';
+import './themes/styles/index.css';
 
 const BOOT_SEQUENCE: string[] = [
   '  ███████╗██╗   ██╗ █████╗ ███╗   ██╗',
@@ -116,7 +118,10 @@ const INIT_STATE: State = {
 };
 
 export default function Shell() {
-  const [state, dispatch] = useReducer(reducer, INIT_STATE);
+  const [state, dispatch] = useReducer(reducer, undefined, () => ({
+    ...INIT_STATE,
+    shell: { ...INIT_STATE.shell, theme: loadTheme() },
+  }));
   const logEndRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
   const hist       = useHistory();
@@ -171,6 +176,16 @@ export default function Shell() {
     }
   }, [state.loading, vim.vimState]);
 
+  // Persist theme changes to localStorage
+  useEffect(() => {
+    saveTheme(state.shell.theme);
+  }, [state.shell.theme]);
+
+  // Cross-tab theme sync
+  useStorageSync(useCallback((theme: string) => {
+    dispatch({ type: 'SET_SHELL', update: { theme } });
+  }, []));
+
   const executeCommand = useCallback(async (raw: string) => {
     const trimmed = raw.trim();
     if (!trimmed) return;
@@ -221,12 +236,39 @@ export default function Shell() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.store, state.shell, hist, vim]);
 
-  // Tab completion: complete command names only (first token)
+  // Tab completion: command names (token 1), dirs (cd), slugs (cat/head/tail/wc), themes
   const handleTabComplete = useCallback((partial: string): string | null => {
-    if (partial.includes(' ') || !partial) return null;
-    const names = Array.from(commands.keys()).sort();
-    return names.find(n => n.startsWith(partial)) ?? null;
-  }, []);
+    if (!partial) return null;
+    const parts = partial.split(/\s+/);
+
+    if (parts.length === 1) {
+      const names = Array.from(commands.keys()).sort();
+      return names.find(n => n.startsWith(partial)) ?? null;
+    }
+
+    const [cmd, ...rest] = parts;
+    const partialArg = rest[rest.length - 1] ?? '';
+
+    if (cmd === 'cd') {
+      const dirs = ['~', 'blog', 'projects', 'talks', 'uses'];
+      const match = dirs.find(d => d.startsWith(partialArg));
+      return match !== undefined ? `${cmd} ${match}` : null;
+    }
+
+    if (['cat', 'head', 'tail', 'wc'].includes(cmd)) {
+      const slugs = state.store.posts(state.shell.lang).map(p => p.slug);
+      const match = slugs.find(s => s.startsWith(partialArg));
+      return match !== undefined ? `${cmd} ${match}` : null;
+    }
+
+    if (cmd === 'theme') {
+      const names = [...VISIBLE_THEMES, 'next', 'random', 'reset'];
+      const match = names.find(n => n.startsWith(partialArg));
+      return match !== undefined ? `${cmd} ${match}` : null;
+    }
+
+    return null;
+  }, [state.store, state.shell.lang]);
 
   const { shell } = state;
   const statusText = `shell: unix · theme: ${shell.theme} · lang: ${shell.lang} · found: ${shell.found}/11`;

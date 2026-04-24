@@ -1,0 +1,16 @@
+:root,
+[data-theme="nord"] {
+  --t-bg:          #2e3440;
+  --t-bg-alt:      #3b4252;
+  --t-fg:          #d8dee9;
+  --t-fg-muted:    #d8dee980;
+  --t-fg-dim:      #d8dee933;
+  --t-accent:      #88c0d0;
+  --t-error:       #bf616a;
+  --t-warning:     #ebcb8b;
+  --t-success:     #a3be8c;
+  --t-border:      #4c566a;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

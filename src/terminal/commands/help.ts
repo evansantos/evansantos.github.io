@@ -25,6 +25,7 @@ const HELP_TEXT = [
   '  date              current time',
   '  uptime            site uptime since 2014',
   '  lang [en|pt]      show or switch language',
+  '  theme [name|next|random|reset]  switch colour theme',
   '',
   '  pager keys: j/k scroll  d/u half-page  g/G top/bottom  / search  q quit',
   '',
