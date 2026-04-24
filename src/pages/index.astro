@@ -1,0 +1,30 @@
+---
+import Shell from '../terminal/Shell';
+import { FOUC_SCRIPT } from '../terminal/_fouc';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>evandro.dev</title>
+    <meta name="description" content="Senior Front-End / Full-Stack Engineer. Brooklyn, NYC." />
+    <link rel="preload" as="fetch" href="/terminal.manifest.json" crossorigin="anonymous" />
+    <script set:html={FOUC_SCRIPT} />
+  </head>
+  <body style="margin:0;background:#0d1117;">
+    <noscript>
+      <main style="font-family:sans-serif;padding:2rem;color:#ccc;">
+        <h1>Evandro Santos — Senior Front-End / Full-Stack Engineer</h1>
+        <p>Based in Brooklyn. React, TypeScript, Node.js. 10+ years.</p>
+        <p>
+          <a href="/en/blog" style="color:#39ff14;">Blog</a> ·
+          <a href="/en/projects" style="color:#39ff14;">Projects</a> ·
+          <a href="/en/about" style="color:#39ff14;">About</a>
+        </p>
+      </main>
+    </noscript>
+    <Shell client:load />
+  </body>
+</html>
