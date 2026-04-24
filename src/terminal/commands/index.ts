@@ -12,9 +12,21 @@ import cd      from './cd.js';
 import ls      from './ls.js';
 import tree    from './tree.js';
 import cat     from './cat.js';
+import grep    from './grep.js';
+import find    from './find.js';
+import head    from './head.js';
+import tail    from './tail.js';
+import wc      from './wc.js';
+import now     from './now.js';
+import about   from './about.js';
+import contact from './contact.js';
+import rss     from './rss.js';
 
 const cmdList: Command[] = [
-  help, whoami, pwd, date, echo, clear, uptime, lang, history, cd, ls, tree, cat,
+  help, whoami, pwd, date, echo, clear, uptime, lang, history,
+  cd, ls, tree, cat,
+  grep, find, head, tail, wc,
+  now, about, contact, rss,
 ];
 
 export const commands: Map<string, Command> = new Map(

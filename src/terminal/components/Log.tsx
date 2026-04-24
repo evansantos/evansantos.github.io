@@ -1,9 +1,10 @@
 import type { Result, Lang } from '../core/types.js';
-import EchoLine  from './EchoLine.js';
-import ErrorLine from './ErrorLine.js';
-import PostList  from './PostList.js';
-import PostView  from './PostView.js';
-import Table     from './Table.js';
+import EchoLine   from './EchoLine.js';
+import ErrorLine  from './ErrorLine.js';
+import PostList   from './PostList.js';
+import PostView   from './PostView.js';
+import Table      from './Table.js';
+import GrepResult from './GrepResult.js';
 
 export interface LogEntry {
   id:      number;
@@ -28,15 +29,16 @@ function ResultRenderer({ result, lang }: { result: Result; lang: Lang }) {
       return <PostView post={result.post} lang={lang} />;
     case 'table':
       return <Table columns={result.columns} rows={result.rows} />;
+    case 'grep-result':
+      return <GrepResult matches={result.matches} />;
     case 'empty':
       return null;
     case 'clear':
     case 'navigate':
     case 'neofetch':
-    case 'grep-result':
-    case 'pager':
     case 'project-list':
-      return <EchoLine text={`[${result.type} — not yet rendered]`} />;
+    case 'pager':
+      return null;
     default:
       return null;
   }

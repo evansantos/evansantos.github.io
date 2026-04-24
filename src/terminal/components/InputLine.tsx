@@ -1,18 +1,19 @@
 import { useRef, useCallback, type KeyboardEvent, type ChangeEvent } from 'react';
 
 interface Props {
-  value:       string;
-  cwd:         string;
-  onChange:    (value: string) => void;
-  onSubmit:    (value: string) => void;
-  onNavigate:  (dir: -1 | 1) => string;
-  onCancel:    () => void;
-  onClear:     () => void;
-  disabled:    boolean;
+  value:           string;
+  cwd:             string;
+  onChange:        (value: string) => void;
+  onSubmit:        (value: string) => void;
+  onNavigate:      (dir: -1 | 1) => string;
+  onCancel:        () => void;
+  onClear:         () => void;
+  disabled:        boolean;
+  onTabComplete?:  (partial: string) => string | null;
 }
 
 export default function InputLine({
-  value, cwd, onChange, onSubmit, onNavigate, onCancel, onClear, disabled,
+  value, cwd, onChange, onSubmit, onNavigate, onCancel, onClear, disabled, onTabComplete,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +26,20 @@ export default function InputLine({
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
     const input = inputRef.current;
     if (!input) return;
+
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (onTabComplete) {
+        const completed = onTabComplete(value);
+        if (completed !== null) {
+          onChange(completed);
+          setTimeout(() => {
+            input.setSelectionRange(completed.length, completed.length);
+          }, 0);
+        }
+      }
+      return;
+    }
 
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -52,8 +67,8 @@ export default function InputLine({
         case 'k': e.preventDefault(); onChange(input.value.slice(0, input.selectionStart ?? 0)); return;
         case 'u': e.preventDefault(); onChange(''); return;
         case 'w': e.preventDefault(); {
-          const pos = input.selectionStart ?? 0;
-          const before = input.value.slice(0, pos);
+          const pos     = input.selectionStart ?? 0;
+          const before  = input.value.slice(0, pos);
           const trimmed = before.replace(/\S+\s*$/, '');
           onChange(trimmed + input.value.slice(pos));
           setTimeout(() => input.setSelectionRange(trimmed.length, trimmed.length), 0);
@@ -66,7 +81,7 @@ export default function InputLine({
       e.preventDefault();
       onSubmit(value);
     }
-  }, [value, onChange, onSubmit, onNavigate, onCancel, onClear]);
+  }, [value, onChange, onSubmit, onNavigate, onCancel, onClear, onTabComplete]);
 
   return (
     <div

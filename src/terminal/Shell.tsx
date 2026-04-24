@@ -4,7 +4,9 @@ import { loadFixture } from './data/load.js';
 import { commands } from './commands/index.js';
 import Log, { type LogEntry } from './components/Log.js';
 import InputLine from './components/InputLine.js';
+import Pager from './components/Pager.js';
 import { useHistory } from './hooks/useHistory.js';
+import { useVimMode } from './hooks/useVimMode.js';
 import type { Result, ShellState } from './core/types.js';
 import '../styles/terminal.css';
 import './themes/styles/matrix.css';
@@ -24,11 +26,11 @@ const BOOT_SEQUENCE: string[] = [
 ];
 
 interface State {
-  log:       LogEntry[];
-  shell:     ShellState;
-  input:     string;
-  loading:   boolean;
-  store:     Store;
+  log:     LogEntry[];
+  shell:   ShellState;
+  input:   string;
+  loading: boolean;
+  store:   Store;
 }
 
 type Action =
@@ -65,8 +67,8 @@ function reducer(state: State, action: Action): State {
               {
                 id:     mkId(),
                 result: {
-                  type: 'error' as const,
-                  text: 'failed to load content — try whoami, date, help',
+                  type:     'error' as const,
+                  text:     'failed to load content — try whoami, date, help',
                   exitCode: 1 as const,
                 },
               },
@@ -76,7 +78,7 @@ function reducer(state: State, action: Action): State {
 
     case 'EXEC': {
       if (action.result.type === 'clear') {
-        return { ...state, input: '' };
+        return { ...state, input: '', log: [] };
       }
       if (action.result.type === 'navigate') {
         const { href, target } = action.result;
@@ -118,6 +120,7 @@ export default function Shell() {
   const logEndRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
   const hist       = useHistory();
+  const vim        = useVimMode();
 
   // Boot and load fixture
   useEffect(() => {
@@ -129,7 +132,6 @@ export default function Shell() {
         store: new Store(result.ok ? result.data : null),
       });
 
-      // Deep-link: execute ?cmd= on mount
       const params = new URLSearchParams(window.location.search);
       const cmd = params.get('cmd');
       if (cmd) {
@@ -155,15 +157,19 @@ export default function Shell() {
     };
   }, []);
 
-  // Auto-scroll to bottom after new entries
+  // Auto-scroll to bottom after new log entries (not when pager is open)
   useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [state.log]);
+    if (!vim.vimState) {
+      logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [state.log, vim.vimState]);
 
-  // Focus input on mount
+  // Focus input after pager exits and on initial load
   useEffect(() => {
-    inputRef.current?.focus();
-  }, [state.loading]);
+    if (!state.loading && !vim.vimState) {
+      inputRef.current?.focus();
+    }
+  }, [state.loading, vim.vimState]);
 
   const executeCommand = useCallback(async (raw: string) => {
     const trimmed = raw.trim();
@@ -198,11 +204,29 @@ export default function Shell() {
     };
 
     const result = await Promise.resolve(cmd.run(args, ctx));
-    dispatch({ type: 'EXEC', input: trimmed, result });
 
+    // Intercept pager: activate overlay instead of logging the raw blocks
+    if (result.type === 'pager') {
+      dispatch({
+        type:   'EXEC',
+        input:  trimmed,
+        result: { type: 'echo', text: `[pager: ${result.title}]` },
+      });
+      vim.enterPager(result.blocks, result.title);
+      return;
+    }
+
+    dispatch({ type: 'EXEC', input: trimmed, result });
     setTimeout(() => inputRef.current?.focus(), 0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.store, state.shell, hist]);
+  }, [state.store, state.shell, hist, vim]);
+
+  // Tab completion: complete command names only (first token)
+  const handleTabComplete = useCallback((partial: string): string | null => {
+    if (partial.includes(' ') || !partial) return null;
+    const names = Array.from(commands.keys()).sort();
+    return names.find(n => n.startsWith(partial)) ?? null;
+  }, []);
 
   const { shell } = state;
   const statusText = `shell: unix · theme: ${shell.theme} · lang: ${shell.lang} · found: ${shell.found}/11`;
@@ -214,34 +238,45 @@ export default function Shell() {
       className="terminal"
       data-theme={shell.theme}
     >
-      <Log entries={state.log} lang={shell.lang} />
-      <div ref={logEndRef} aria-hidden="true" />
+      {vim.vimState ? (
+        <Pager
+          vimState={vim.vimState}
+          onKey={vim.handleVimKey}
+          onSearchChange={vim.setSearchQuery}
+          onSearchCommit={vim.commitSearch}
+        />
+      ) : (
+        <>
+          <Log entries={state.log} lang={shell.lang} />
+          <div ref={logEndRef} aria-hidden="true" />
 
-      <InputLine
-        value={state.input}
-        cwd={shell.cwd}
-        onChange={v => dispatch({ type: 'SET_INPUT', value: v })}
-        onSubmit={executeCommand}
-        onNavigate={hist.navigate}
-        onCancel={() => {
-          dispatch({ type: 'EXEC', input: '^C', result: { type: 'empty' } });
-          dispatch({ type: 'SET_INPUT', value: '' });
-        }}
-        onClear={() => {
-          state.log.length;
-          dispatch({ type: 'EXEC', input: 'clear', result: { type: 'clear' } });
-        }}
-        disabled={state.loading}
-      />
+          <InputLine
+            value={state.input}
+            cwd={shell.cwd}
+            onChange={v => dispatch({ type: 'SET_INPUT', value: v })}
+            onSubmit={executeCommand}
+            onNavigate={hist.navigate}
+            onCancel={() => {
+              dispatch({ type: 'EXEC', input: '^C', result: { type: 'empty' } });
+              dispatch({ type: 'SET_INPUT', value: '' });
+            }}
+            onClear={() => {
+              dispatch({ type: 'EXEC', input: 'clear', result: { type: 'clear' } });
+            }}
+            disabled={state.loading}
+            onTabComplete={handleTabComplete}
+          />
 
-      <div
-        role="status"
-        aria-live="polite"
-        aria-label="shell status"
-        className="terminal__status"
-      >
-        {statusText}
-      </div>
+          <div
+            role="status"
+            aria-live="polite"
+            aria-label="shell status"
+            className="terminal__status"
+          >
+            {statusText}
+          </div>
+        </>
+      )}
     </div>
   );
 }
