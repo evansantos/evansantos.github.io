@@ -89,7 +89,7 @@ export interface NeofetchData {
   name:     string;
   title:    string;
   location: string;
-  lang:     string;
+  lang:     Lang;
   theme:    string;
   found:    string;
   uptime:   string;

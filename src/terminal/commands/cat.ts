@@ -13,6 +13,22 @@ export default defineCommand({
       return { type: 'error', text: 'cat: missing operand', exitCode: 1 };
     }
 
+    if (target === '.bashrc') {
+      return {
+        type: 'echo',
+        text: [
+          '# ~/.bashrc — evandro',
+          "alias please='sudo'",
+          "alias yolo='git push --force'",
+          "alias k='kubectl'",
+          "alias serve='python3 -m http.server'",
+          "alias ohno='git reflog'",
+          "alias tldr='cat'",
+          'export EDITOR=cat   # see also: vim, nano, emacs',
+        ].join('\n'),
+      };
+    }
+
     const { store, state } = ctx;
 
     const [dir, ...rest] = target.split('/');

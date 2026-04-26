@@ -38,6 +38,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Bundle size budget
+        run: pnpm size-limit:check
+
       - name: A11y audit
         run: pnpm test:a11y
 

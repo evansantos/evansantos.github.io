@@ -44,9 +44,28 @@ function ResultRenderer({ result, lang }: { result: Result; lang: Lang }) {
           ))}
         </ul>
       );
+    case 'neofetch': {
+      const d = result.data;
+      const text = [
+        '  ___    ',
+        ' / _ \\__ ',
+        '| |/ \\ \\',
+        ' \\___/_/ ',
+        '',
+        `${d.name}`,
+        `──────────────`,
+        `title:    ${d.title}`,
+        `location: ${d.location}`,
+        `lang:     ${d.lang}`,
+        `theme:    ${d.theme}`,
+        `found:    ${d.found}`,
+        `uptime:   ${d.uptime}`,
+        `shell:    ${d.shell}`,
+      ].join('\n');
+      return <pre className="terminal__neofetch" aria-label="identity card">{text}</pre>;
+    }
     case 'clear':
     case 'navigate':
-    case 'neofetch':
     case 'pager':
       return null;
     default:
