@@ -23,7 +23,7 @@ const fixture: ContentFixture = {
 
 const ctx: Context = {
   store:    new Store(fixture),
-  state:    { cwd: '~', lang: 'en', theme: 'matrix', found: 0, degraded: false },
+  state:    { cwd: '~', lang: 'en', theme: 'matrix', found: 0, unlocked: [], degraded: false },
   setState: () => {},
 };
 

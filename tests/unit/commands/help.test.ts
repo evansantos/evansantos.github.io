@@ -5,7 +5,7 @@ import { Store } from '../../../src/terminal/core/content.js';
 
 const ctx: Context = {
   store:    new Store(null),
-  state:    { cwd: '~', lang: 'en', theme: 'matrix', found: 0, degraded: false },
+  state:    { cwd: '~', lang: 'en', theme: 'matrix', found: 0, unlocked: [], degraded: false },
   setState: () => {},
 };
 

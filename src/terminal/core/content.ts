@@ -30,9 +30,9 @@ export class Store implements ContentStore {
     return this.fixture.posts.find(p => p.lang === lang && p.slug === slug && !p.draft);
   }
 
-  async loadPost(slug: string): Promise<FixturePost | undefined> {
+  async loadPost(lang: Lang, slug: string): Promise<FixturePost | undefined> {
     if (!this.fixture) return undefined;
-    return this.fixture.posts.find(p => p.slug === slug && !p.draft);
+    return this.fixture.posts.find(p => p.lang === lang && p.slug === slug && !p.draft);
   }
 
   projects(): FixtureProject[] {

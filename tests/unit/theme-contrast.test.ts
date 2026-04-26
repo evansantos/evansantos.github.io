@@ -1,7 +1,7 @@
 import { test } from 'poku';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { VISIBLE_THEMES } from '../../src/terminal/themes/registry.js';
+import { ALL_THEMES } from '../../src/terminal/themes/unlocks.js';
 
 const STYLES_DIR = new URL('../../src/terminal/themes/styles/', import.meta.url);
 
@@ -30,7 +30,7 @@ function parseVars(css: string): Record<string, string> {
   return out;
 }
 
-for (const theme of VISIBLE_THEMES) {
+for (const theme of ALL_THEMES) {
   test(`theme "${theme}": fg/bg contrast >= 4.5 (WCAG AA body text)`, () => {
     const css = readFileSync(new URL(`${theme}.css`, STYLES_DIR), 'utf8');
     const vars = parseVars(css);

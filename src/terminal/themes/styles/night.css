@@ -1,0 +1,16 @@
+:root,
+[data-theme="night"] {
+  --t-bg:          #08080f;
+  --t-bg-alt:      #12121e;
+  --t-fg:          #c8c8e0;
+  --t-fg-muted:    #c8c8e080;
+  --t-fg-dim:      #c8c8e033;
+  --t-accent:      #6a8cff;
+  --t-error:       #ff5577;
+  --t-warning:     #ffaa55;
+  --t-success:     #66dd99;
+  --t-border:      #c8c8e020;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

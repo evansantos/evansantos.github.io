@@ -21,6 +21,6 @@ const alternateUrl = String(Astro.url).replace(`/${lang}/`, `/${lang === 'en' ? 
 <StaticLayout title="About" lang={lang} alternateUrl={alternateUrl}>
   <Content />
   <div class="view-in-terminal-wrap">
-    <a href="/?cmd=about" class="view-in-terminal">view in terminal</a>
+    <a href="/?cmd=cat+about" class="view-in-terminal">view in terminal</a>
   </div>
 </StaticLayout>

@@ -47,8 +47,8 @@ const draftAttempt = store.post('en', 'draft-post');
 assert.strictEqual(draftAttempt, undefined, 'post() does not return draft posts');
 
 // Async loadPost
-const loaded = await store.loadPost('debouncing');
-assert.strictEqual(loaded?.title, 'Debouncing', 'loadPost finds post by slug');
+const loaded = await store.loadPost('en', 'debouncing');
+assert.strictEqual(loaded?.title, 'Debouncing', 'loadPost finds post by lang + slug');
 
 assert.strictEqual(store.uses().body, 'Uses body.', 'uses() returns uses page');
 assert.strictEqual(store.about('en').body, 'About EN.', 'about(en) returns EN about');

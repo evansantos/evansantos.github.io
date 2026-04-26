@@ -11,7 +11,7 @@ export default defineCommand({
       return { type: 'error', text: 'wc: missing operand', exitCode: 1 };
     }
 
-    const post = await ctx.store.loadPost(slug);
+    const post = await ctx.store.loadPost(ctx.state.lang, slug);
     if (!post) {
       return {
         type: 'error', text: `wc: ${slug}: No such file or directory`,

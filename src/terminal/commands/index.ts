@@ -22,13 +22,14 @@ import about   from './about.js';
 import contact from './contact.js';
 import rss     from './rss.js';
 import theme   from './theme.js';
+import sudo    from './sudo.js';
 
 const cmdList: Command[] = [
   help, whoami, pwd, date, echo, clear, uptime, lang, history,
   cd, ls, tree, cat,
   grep, find, head, tail, wc,
   now, about, contact, rss,
-  theme,
+  theme, sudo,
 ];
 
 export const commands: Map<string, Command> = new Map(

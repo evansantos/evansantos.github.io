@@ -17,7 +17,7 @@ export default defineCommand({
 
     const n = typeof flags['n'] === 'string' ? parseInt(flags['n'], 10) : DEFAULT_N;
 
-    const post = await ctx.store.loadPost(slug);
+    const post = await ctx.store.loadPost(ctx.state.lang, slug);
     if (!post) {
       return {
         type: 'error', text: `head: ${slug}: No such file or directory`,

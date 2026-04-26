@@ -21,7 +21,7 @@ export default defineCommand({
 
     if (isFromBlog || state.cwd === 'blog') {
       const actualSlug = state.cwd === 'blog' && dir !== 'blog' ? target : slug;
-      const post = await store.loadPost(actualSlug);
+      const post = await store.loadPost(state.lang, actualSlug);
 
       if (!post) {
         const post2 = store.post('en', actualSlug);

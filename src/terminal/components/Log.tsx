@@ -33,10 +33,20 @@ function ResultRenderer({ result, lang }: { result: Result; lang: Lang }) {
       return <GrepResult matches={result.matches} />;
     case 'empty':
       return null;
+    case 'project-list':
+      return (
+        <ul className="terminal__project-list">
+          {result.items.map((p, i) => (
+            <li key={i}>
+              <strong>{p.title}</strong>
+              {p.dek ? ` — ${p.dek}` : ''}
+            </li>
+          ))}
+        </ul>
+      );
     case 'clear':
     case 'navigate':
     case 'neofetch':
-    case 'project-list':
     case 'pager':
       return null;
     default:

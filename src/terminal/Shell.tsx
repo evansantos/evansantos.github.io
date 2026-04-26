@@ -7,8 +7,10 @@ import InputLine from './components/InputLine.js';
 import Pager from './components/Pager.js';
 import { useHistory } from './hooks/useHistory.js';
 import { useVimMode } from './hooks/useVimMode.js';
-import { loadTheme, saveTheme, useStorageSync } from './hooks/useTheme.js';
-import { VISIBLE_THEMES } from './themes/registry.js';
+import { loadTheme, saveTheme, loadUnlocked, saveUnlocked, useStorageSync } from './hooks/useTheme.js';
+import { useKonami } from './hooks/useKonami.js';
+import HackerRain from './components/HackerRain.js';
+import { ALL_THEMES } from './themes/unlocks.js';
 import type { Result, ShellState } from './core/types.js';
 import '../styles/terminal.css';
 import './themes/styles/index.css';
@@ -111,7 +113,7 @@ function reducer(state: State, action: Action): State {
 
 const INIT_STATE: State = {
   log:     [],
-  shell:   { cwd: '~', lang: 'en', theme: 'matrix', found: 0, degraded: false },
+  shell:   { cwd: '~', lang: 'en', theme: 'matrix', found: 0, unlocked: [], degraded: false },
   input:   '',
   loading: true,
   store:   new Store(null),
@@ -120,7 +122,11 @@ const INIT_STATE: State = {
 export default function Shell() {
   const [state, dispatch] = useReducer(reducer, undefined, () => ({
     ...INIT_STATE,
-    shell: { ...INIT_STATE.shell, theme: loadTheme() },
+    shell: {
+      ...INIT_STATE.shell,
+      theme:    loadTheme(),
+      unlocked: loadUnlocked(),
+    },
   }));
   const logEndRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
@@ -181,10 +187,28 @@ export default function Shell() {
     saveTheme(state.shell.theme);
   }, [state.shell.theme]);
 
-  // Cross-tab theme sync
-  useStorageSync(useCallback((theme: string) => {
-    dispatch({ type: 'SET_SHELL', update: { theme } });
-  }, []));
+  // Persist unlocked changes to localStorage
+  useEffect(() => {
+    saveUnlocked(state.shell.unlocked);
+  }, [state.shell.unlocked]);
+
+  // Cross-tab theme + unlocked sync
+  useStorageSync(
+    useCallback((theme: string) => {
+      dispatch({ type: 'SET_SHELL', update: { theme } });
+    }, []),
+    useCallback((unlocked: string[]) => {
+      dispatch({ type: 'SET_SHELL', update: { unlocked } });
+    }, []),
+  );
+
+  // Konami code listener
+  useKonami(useCallback(() => {
+    const current = state.shell.unlocked;
+    if (!current.includes('konami')) {
+      dispatch({ type: 'SET_SHELL', update: { unlocked: [...current, 'konami'] } });
+    }
+  }, [state.shell.unlocked]));
 
   const executeCommand = useCallback(async (raw: string) => {
     const trimmed = raw.trim();
@@ -262,7 +286,7 @@ export default function Shell() {
     }
 
     if (cmd === 'theme') {
-      const names = [...VISIBLE_THEMES, 'next', 'random', 'reset'];
+      const names = [...ALL_THEMES, 'next', 'random', 'reset'];
       const match = names.find(n => n.startsWith(partialArg));
       return match !== undefined ? `${cmd} ${match}` : null;
     }
@@ -271,7 +295,10 @@ export default function Shell() {
   }, [state.store, state.shell.lang]);
 
   const { shell } = state;
-  const statusText = `shell: unix · theme: ${shell.theme} · lang: ${shell.lang} · found: ${shell.found}/11`;
+  const foundCount = 6 + ['sandwich', 'night', 'lazy', 'konami', 'hacker'].filter(
+    h => shell.unlocked.includes(h),
+  ).length;
+  const statusText = `shell: unix · theme: ${shell.theme} · lang: ${shell.lang} · found: ${foundCount}/11`;
 
   return (
     <div
@@ -280,6 +307,7 @@ export default function Shell() {
       className="terminal"
       data-theme={shell.theme}
     >
+      <HackerRain active={shell.theme === 'hacker'} />
       {vim.vimState ? (
         <Pager
           vimState={vim.vimState}

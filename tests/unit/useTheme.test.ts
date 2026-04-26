@@ -58,3 +58,52 @@ test('saveTheme tolerates malformed JSON by overwriting with a fresh blob', () =
   const parsed = JSON.parse(localStorage.getItem(KEY)!);
   assert.equal(parsed.theme, 'paper');
 });
+
+const { loadUnlocked, saveUnlocked, addUnlocked } =
+  await import('../../src/terminal/hooks/useTheme.js');
+
+test('loadUnlocked returns [] when localStorage is empty', () => {
+  assert.deepEqual(loadUnlocked(), []);
+});
+
+test('loadUnlocked returns array when stored', () => {
+  localStorage.setItem(KEY, JSON.stringify({ theme: 'matrix', unlocked: ['sandwich', 'lazy'] }));
+  assert.deepEqual(loadUnlocked(), ['sandwich', 'lazy']);
+});
+
+test('loadUnlocked filters non-strings and unknown themes silently', () => {
+  localStorage.setItem(KEY, JSON.stringify({ unlocked: ['sandwich', 42, 'dracula', 'konami'] }));
+  assert.deepEqual(loadUnlocked(), ['sandwich', 'konami']);
+});
+
+test('loadUnlocked returns [] when unlocked is not an array', () => {
+  localStorage.setItem(KEY, JSON.stringify({ unlocked: 'sandwich' }));
+  assert.deepEqual(loadUnlocked(), []);
+});
+
+test('loadUnlocked returns [] when JSON is malformed', () => {
+  localStorage.setItem(KEY, '{garbage');
+  assert.deepEqual(loadUnlocked(), []);
+});
+
+test('saveUnlocked writes the array and preserves theme', () => {
+  localStorage.setItem(KEY, JSON.stringify({ theme: 'amber', unlocked: [] }));
+  saveUnlocked(['sandwich']);
+  const parsed = JSON.parse(localStorage.getItem(KEY)!);
+  assert.equal(parsed.theme, 'amber');
+  assert.deepEqual(parsed.unlocked, ['sandwich']);
+});
+
+test('addUnlocked dedupes and returns the new array', () => {
+  saveUnlocked(['sandwich']);
+  const next = addUnlocked('sandwich');
+  assert.deepEqual(next, ['sandwich']);
+  const next2 = addUnlocked('konami');
+  assert.deepEqual(next2.sort(), ['konami', 'sandwich']);
+});
+
+test('addUnlocked rejects unknown hidden themes silently', () => {
+  saveUnlocked([]);
+  const next = addUnlocked('dracula');
+  assert.deepEqual(next, []);
+});

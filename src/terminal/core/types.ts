@@ -124,7 +124,8 @@ export interface ShellState {
   cwd:      string;   // '~' | 'blog' | 'projects' | 'talks' | 'uses'
   lang:     Lang;
   theme:    string;
-  found:    number;   // unlocked theme count (incremented in M4+)
+  found:    number;   // unlocked theme count (derived from unlocked.length + visible count)
+  unlocked: string[]; // hidden themes the user has discovered (M5+)
   degraded: boolean;
 }
 
@@ -134,7 +135,7 @@ export interface ContentStore {
   degraded:   boolean;
   posts(lang: Lang): FixturePost[];
   post(lang: Lang, slug: string): FixturePost | undefined;
-  loadPost(slug: string): Promise<FixturePost | undefined>;
+  loadPost(lang: Lang, slug: string): Promise<FixturePost | undefined>;
   projects(): FixtureProject[];
   talks(): FixtureTalk[];
   now(): FixtureNow;
