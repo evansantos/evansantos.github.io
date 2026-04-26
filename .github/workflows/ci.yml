@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [feat/evandro-dev, master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  ci:
+    name: Typecheck · Lint · Test · Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Bundle size budget
+        run: pnpm size-limit:check
+
+      - name: A11y audit
+        run: pnpm test:a11y
+
+      - name: Assert terminal fixture present
+        run: test -f dist/terminal.manifest.json || echo "No terminal fixture yet — expected in M2"

@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '@layouts/PostLayout.astro';
+import { calcReadingTime } from '@lib/reading-time';
+import type { Lang } from '@lib/locale';
+import { isValidLang } from '@lib/locale';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(post => {
+    const [lang, ...slugParts] = post.id.split('/');
+    return {
+      params: { lang, slug: slugParts.join('/') },
+      props: { post },
+    };
+  });
+}
+
+const { lang, slug } = Astro.params as { lang: Lang; slug: string };
+const { post } = Astro.props;
+
+if (!isValidLang(lang)) return Astro.redirect('/en/blog');
+
+const { Content } = await render(post);
+const readingTime = post.data.readingTime ?? calcReadingTime(post.body ?? '');
+
+const alternateSlug = post.data.translationOf ?? slug;
+const alternateLang = lang === 'en' ? 'pt' : 'en';
+const allPosts = await getCollection('blog');
+const alternatePost = allPosts.find(
+  p => p.id === `${alternateLang}/${alternateSlug}` && !p.data.draft
+);
+const alternateUrl = alternatePost
+  ? `https://evandro.dev/${alternateLang}/blog/${alternateSlug}`
+  : undefined;
+---
+
+<PostLayout
+  title={post.data.title}
+  dek={post.data.dek}
+  date={post.data.date}
+  lang={lang}
+  tags={post.data.tags}
+  readingTime={readingTime}
+  alternateUrl={alternateUrl}
+>
+  {!alternatePost && (
+    <p class="no-translation">
+      {lang === 'en'
+        ? 'This post has no Portuguese version yet.'
+        : 'Este post ainda não tem versão em inglês.'}
+    </p>
+  )}
+  <Content />
+  <div class="view-in-terminal-wrap">
+    <a href={`/?cmd=cat+blog%2F${slug}`} class="view-in-terminal">view in terminal</a>
+  </div>
+</PostLayout>
+
+<style>
+  .no-translation {
+    font-size: 0.85rem;
+    color: var(--color-fg-muted);
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+  .view-in-terminal-wrap { margin-top: 3rem; }
+</style>

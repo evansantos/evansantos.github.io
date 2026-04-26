@@ -1,34 +1,58 @@
 {
-  "name": "gatsby-starter-default",
-  "description": "Gatsby default starter",
-  "version": "1.0.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
-  "dependencies": {
-    "babel-plugin-styled-components": "^1.7.1",
-    "eslint-plugin-jsx-a11y": "^6.1.1",
-    "gatsby": "^1.9.247",
-    "gatsby-link": "^1.6.40",
-    "gatsby-plugin-react-helmet": "^2.0.10",
-    "gatsby-plugin-styled-components": "^3.0.0",
-    "react-helmet": "^5.2.0",
-    "react-icons": "^3.1.0",
-    "styled-components": "^3.4.9"
+  "name": "evandro-dev",
+  "version": "0.0.1",
+  "description": "evandro.dev — personal site with a terminal interface",
+  "engines": {
+    "node": ">=22"
   },
-  "keywords": [
-    "gatsby"
-  ],
-  "license": "MIT",
+  "type": "module",
   "scripts": {
-    "build": "gatsby build",
-    "develop": "gatsby develop",
-    "format": "prettier --write 'src/**/*.js'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "predev": "tsx scripts/build-fixture.ts && tsx scripts/emit-csp-hash.ts",
+    "prebuild": "tsx scripts/build-fixture.ts && tsx scripts/emit-csp-hash.ts",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "format": "oxfmt src",
+    "lint": "oxlint src",
+    "test": "poku tests/unit",
+    "test:a11y": "poku tests/a11y",
+    "typecheck": "tsc --noEmit",
+    "size-limit:check": "size-limit"
+  },
+  "size-limit": [
+    {
+      "path": "dist/_astro/*.js",
+      "name": "Terminal island",
+      "limit": "122 KB",
+      "gzip": true
+    }
+  ],
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/rss": "^4.0.0",
+    "astro": "^5.0.0",
+    "gray-matter": "^4.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "prettier": "^1.12.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "@happy-dom/global-registrator": "^15.0.0",
+    "@pokujs/react": "^1.5.1",
+    "@size-limit/file": "^12.1.0",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "axe-core": "^4.10.0",
+    "happy-dom": "^15.0.0",
+    "oxfmt": "0.2.0",
+    "oxlint": "0.15.0",
+    "poku": "^4.1.0",
+    "size-limit": "^12.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.5.0"
   }
 }

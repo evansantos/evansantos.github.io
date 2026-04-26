@@ -1,0 +1,40 @@
+---
+import { getEntry, render } from 'astro:content';
+import StaticLayout from '@layouts/StaticLayout.astro';
+import { formatDate } from '@lib/date';
+import type { Lang } from '@lib/locale';
+import { isValidLang } from '@lib/locale';
+
+export async function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'pt' } }];
+}
+
+const { lang } = Astro.params as { lang: Lang };
+if (!isValidLang(lang)) return Astro.redirect('/en/now');
+
+const entry = await getEntry('now', 'now');
+if (!entry) return Astro.redirect('/');
+
+const { Content } = await render(entry);
+const { updated, location, building, reading, listening, learning, lookingFor } = entry.data;
+---
+
+<StaticLayout title="Now" lang={lang}>
+  <h1>Now</h1>
+  <p class="updated">Updated <time datetime={updated.toISOString().slice(0, 10)}>{formatDate(updated, lang)}</time> from {location}.</p>
+  <dl class="now-list">
+    <dt>Building</dt><dd>{building}</dd>
+    <dt>Reading</dt><dd>{reading}</dd>
+    <dt>Listening</dt><dd>{listening}</dd>
+    <dt>Learning</dt><dd>{learning}</dd>
+    <dt>Looking for</dt><dd>{lookingFor}</dd>
+  </dl>
+  <Content />
+  <a href="/?cmd=cat+now" class="view-in-terminal">view in terminal</a>
+</StaticLayout>
+
+<style>
+  .updated { color: var(--color-fg-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .now-list { display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1.5rem; margin-bottom: 2rem; }
+  .now-list dt { font-weight: 600; }
+</style>

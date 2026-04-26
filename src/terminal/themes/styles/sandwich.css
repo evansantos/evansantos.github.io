@@ -1,0 +1,16 @@
+:root,
+[data-theme="sandwich"] {
+  --t-bg:          #f4e4bc;
+  --t-bg-alt:      #e8d4a0;
+  --t-fg:          #3d2817;
+  --t-fg-muted:    #3d281780;
+  --t-fg-dim:      #3d281733;
+  --t-accent:      #b8651a;
+  --t-error:       #a02020;
+  --t-warning:     #c47b00;
+  --t-success:     #5a7a2a;
+  --t-border:      #3d281720;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

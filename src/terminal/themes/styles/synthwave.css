@@ -1,0 +1,16 @@
+:root,
+[data-theme="synthwave"] {
+  --t-bg:          #0d0221;
+  --t-bg-alt:      #1a0a3a;
+  --t-fg:          #f0e6ff;
+  --t-fg-muted:    #f0e6ff80;
+  --t-fg-dim:      #f0e6ff33;
+  --t-accent:      #ff6eff;
+  --t-error:       #ff4466;
+  --t-warning:     #ffcc00;
+  --t-success:     #00ffaa;
+  --t-border:      #f0e6ff20;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

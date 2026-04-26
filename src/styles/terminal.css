@@ -1,0 +1,228 @@
+/* ── Shell layout ─────────────────────────────────────────── */
+
+.terminal {
+  height:           100dvh;
+  display:          flex;
+  flex-direction:   column;
+  overflow:         hidden;
+  background:       var(--t-bg);
+  color:            var(--t-fg);
+  font-family:      var(--t-font-mono);
+  font-size:        var(--t-font-size);
+  line-height:      var(--t-line-height);
+}
+
+/* ── Output log ────────────────────────────────────────────── */
+
+.terminal__log {
+  flex:                1;
+  overflow-y:          auto;
+  overflow-x:          hidden;
+  padding:             1rem 1.5rem 0.5rem;
+  overscroll-behavior: contain;
+  scroll-behavior:     smooth;
+}
+
+.terminal__log-entry {
+  margin-bottom: 0.5rem;
+}
+
+.terminal__log-entry-input {
+  color:         var(--t-fg-muted);
+  margin-bottom: 0.15rem;
+}
+
+.terminal__log-entry-input::before {
+  content: '~ $ ';
+}
+
+/* ── Input row ──────────────────────────────────────────────── */
+
+.terminal__input-row {
+  flex-shrink:     0;
+  display:         flex;
+  align-items:     center;
+  gap:             0.5rem;
+  padding:         0.5rem 1.5rem;
+  border-top:      1px solid var(--t-border);
+  min-height:      44px;
+  padding-bottom:  calc(0.5rem + var(--keyboard-offset, 0px));
+  transition:      padding-bottom 120ms ease;
+}
+
+.terminal__prompt {
+  color:       var(--t-fg-muted);
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.terminal__input {
+  flex:             1;
+  background:       transparent;
+  border:           none;
+  outline:          none;
+  color:            var(--t-fg);
+  font-family:      inherit;
+  font-size:        max(16px, var(--t-font-size));
+  caret-color:      var(--t-fg);
+  min-width:        0;
+}
+
+/* ── Status bar ─────────────────────────────────────────────── */
+
+.terminal__status {
+  flex-shrink:     0;
+  padding:         0.25rem 1.5rem;
+  border-top:      1px solid var(--t-border);
+  font-size:       0.75rem;
+  color:           var(--t-fg-muted);
+  white-space:     nowrap;
+  overflow:        hidden;
+  text-overflow:   ellipsis;
+  background:      var(--t-bg-alt);
+}
+
+/* ── Result types ───────────────────────────────────────────── */
+
+.terminal__echo {
+  color:        var(--t-fg);
+  white-space:  pre-wrap;
+  word-break:   break-word;
+}
+
+.terminal__error {
+  color: var(--t-error);
+}
+
+.terminal__error-hint {
+  color:      var(--t-fg-muted);
+  font-size:  0.85em;
+  margin-top: 0.2rem;
+}
+
+.terminal__post-list {
+  list-style: none;
+  padding:    0;
+  margin:     0;
+}
+
+.terminal__post-item {
+  padding:      0.4rem 0;
+  border-bottom: 1px solid var(--t-border);
+}
+
+.terminal__post-item:last-child { border-bottom: none; }
+
+.terminal__post-date  { color: var(--t-fg-muted); margin-right: 1rem; }
+.terminal__post-dek   { color: var(--t-fg-muted); font-size: 0.85em; margin-top: 0.15rem; }
+
+.terminal__post-tag {
+  display:         inline-block;
+  font-size:       0.75em;
+  padding:         0.1em 0.4em;
+  border:          1px solid var(--t-border);
+  border-radius:   3px;
+  color:           var(--t-fg-muted);
+  margin-left:     0.35rem;
+  text-decoration: none;
+}
+
+.terminal__table {
+  border-collapse: collapse;
+  width:           100%;
+  margin:          0.5rem 0;
+}
+
+.terminal__table th,
+.terminal__table td {
+  padding:      0.25rem 0.75rem;
+  text-align:   left;
+  border-bottom: 1px solid var(--t-border);
+}
+
+.terminal__table th {
+  color:       var(--t-fg-muted);
+  font-weight: normal;
+}
+
+.terminal__table td[data-align="right"],
+.terminal__table th[data-align="right"] {
+  text-align: right;
+}
+
+/* post-view via react-markdown */
+.terminal__post-view {
+  line-height: 1.7;
+}
+
+.terminal__post-view h1,
+.terminal__post-view h2,
+.terminal__post-view h3 {
+  color:      var(--t-accent);
+  margin-top: 1.5rem;
+}
+
+.terminal__post-view code {
+  background:    var(--t-bg-alt);
+  padding:       0.1em 0.3em;
+  border-radius: 3px;
+  font-size:     0.9em;
+}
+
+.terminal__post-view pre {
+  background:    var(--t-bg-alt);
+  border:        1px solid var(--t-border);
+  border-radius: 4px;
+  padding:       0.75rem 1rem;
+  overflow-x:    auto;
+}
+
+.terminal__post-view pre code { background: none; padding: 0; }
+
+.terminal__post-view a { color: var(--t-accent); }
+
+/* ── Motion ─────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal__input-row { transition: none; }
+}
+
+/* ── Grep result ──────────────────────────────────────────────────────────── */
+
+.terminal__grep-result { margin: 0.25rem 0; }
+.terminal__grep-item { padding: 0.35rem 0; border-bottom: 1px solid var(--t-border); }
+.terminal__grep-item:last-child { border-bottom: none; }
+.terminal__grep-title { color: var(--t-accent); display: block; }
+.terminal__grep-excerpt { color: var(--t-fg-muted); font-size: 0.85em; margin-top: 0.15rem; white-space: pre-wrap; }
+.terminal__grep-mark { background: var(--t-accent); color: var(--t-bg); padding: 0 0.15em; }
+
+/* ── Pager ────────────────────────────────────────────────────────────────── */
+
+.terminal__pager { flex: 1; overflow-y: auto; padding: 1rem 1.5rem 0.5rem; }
+.terminal__pager-block { padding: 0.25rem 0; line-height: 1.6; }
+.terminal__pager-block--current { background: var(--t-fg-dim); }
+.terminal__pager-block--match { border-left: 2px solid var(--t-accent); padding-left: 0.5rem; }
+.terminal__pager-status { flex-shrink: 0; padding: 0.25rem 1.5rem; background: var(--t-bg-alt); border-top: 1px solid var(--t-border); color: var(--t-fg-muted); font-size: 0.75rem; }
+.terminal__pager-search { flex-shrink: 0; display: flex; align-items: center; padding: 0.35rem 1.5rem; border-top: 1px solid var(--t-border); }
+.terminal__pager-search-prefix { color: var(--t-fg); margin-right: 0.25rem; }
+.terminal__pager-search-input { flex: 1; background: transparent; border: none; outline: none; color: var(--t-fg); font-family: inherit; font-size: inherit; }
+
+/* ── Theme transition ─────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}

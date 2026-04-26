@@ -1,0 +1,49 @@
+---
+import '@styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — evandro.dev</title>
+    <style>
+      :root {
+        --bg:     #0d1117;
+        --fg:     #39ff14;
+        --muted:  #39ff1480;
+        --accent: #00bfff;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: 'Courier New', monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        padding: 2rem;
+      }
+      .terminal-box { max-width: 60ch; width: 100%; }
+      .prompt { color: var(--muted); }
+      .cmd    { color: var(--fg); }
+      .error  { color: #ff4444; margin: 1rem 0; }
+      .hint   { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+      a       { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <main class="terminal-box">
+      <p><span class="prompt">evandro.dev ~ $</span> <span class="cmd">cat <span id="path-cmd">/404</span></span></p>
+      <p class="error">bash: <span id="path-err">/404</span>: No such file or directory</p>
+      <p class="hint">hint: try <a href="/en/blog">ls blog</a> or <a href="/">~</a></p>
+    </main>
+    <script>
+      const p = window.location.pathname;
+      document.querySelectorAll('#path-cmd, #path-err').forEach(el => el.textContent = p);
+    </script>
+  </body>
+</html>

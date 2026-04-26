@@ -1,0 +1,36 @@
+:root,
+[data-theme="hacker"] {
+  --t-bg:          #000000;
+  --t-bg-alt:      #050505;
+  --t-fg:          #00ff41;
+  --t-fg-muted:    #00ff4180;
+  --t-fg-dim:      #00ff4133;
+  --t-accent:      #66ff99;
+  --t-error:       #ff2244;
+  --t-warning:     #ffcc00;
+  --t-success:     #00ff41;
+  --t-border:      #00ff4120;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}
+
+[data-theme="hacker"] .terminal__hacker-rain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+[data-theme="hacker"] .terminal__log,
+[data-theme="hacker"] .terminal__input-row,
+[data-theme="hacker"] .terminal__status,
+[data-theme="hacker"] .terminal__pager {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="hacker"] .terminal__hacker-rain { display: none; }
+}

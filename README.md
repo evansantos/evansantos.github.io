@@ -1,26 +1,38 @@
-# gatsby-starter-default
-The default Gatsby starter.
+# evandro.dev
 
-For an overview of the project structure please refer to the [Gatsby documentation - Building with Components](https://www.gatsbyjs.org/docs/building-with-components/).
+A personal site that's actually a terminal.
 
-## Install
+Built with Astro 5, React 19, TypeScript (strict), and a custom REPL. Themes,
+vim-style pager, multi-language. No JS frameworks beyond React on the single
+terminal island.
 
-Make sure that you have the Gatsby CLI program installed:
-```sh
-npm install --global gatsby-cli
+## Dev setup
+
+```bash
+pnpm install
+pnpm dev
 ```
 
-And run from your CLI:
-```sh
-gatsby new gatsby-example-site
-```
+Open <http://localhost:4321>. Type `help` to start.
 
-Then you can run it by:
-```sh
-cd gatsby-example-site
-gatsby develop
-```
+## Scripts
 
-## Deploy
+| Command                  | Purpose                          |
+|--------------------------|----------------------------------|
+| `pnpm dev`               | dev server (rebuilds fixture)    |
+| `pnpm build`             | production build                 |
+| `pnpm test`              | unit tests (Poku)                |
+| `pnpm test:a11y`         | a11y audit (axe-core)            |
+| `pnpm typecheck`         | tsc --noEmit                     |
+| `pnpm lint`              | oxlint                           |
+| `pnpm size-limit:check`  | bundle size budget               |
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/gatsbyjs/gatsby-starter-default)
+## Adding a blog post
+
+1. Create `src/content/blog/<slug>.mdx` with the frontmatter from `src/content/schemas.ts → blogSchema`.
+2. (Optional) Add a `pt` translation under the same slug with `lang: pt` and `translationOf: <en-slug>`.
+3. `pnpm dev` regenerates the terminal fixture; the post appears in `ls`, `find`, `grep`, `cat`.
+
+## Architecture
+
+See `docs/superpowers/plans/` for milestone implementation plans.

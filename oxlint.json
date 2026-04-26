@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "react/no-danger": "error",
+    "no-console": "warn",
+    "no-debugger": "error"
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "astro": "readonly"
+  }
+}

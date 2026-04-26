@@ -1,0 +1,16 @@
+:root,
+[data-theme="konami"] {
+  --t-bg:          #1a0a2e;
+  --t-bg-alt:      #2a1545;
+  --t-fg:          #ffe066;
+  --t-fg-muted:    #ffe06680;
+  --t-fg-dim:      #ffe06633;
+  --t-accent:      #ff5577;
+  --t-error:       #ff3344;
+  --t-warning:     #ffaa00;
+  --t-success:     #66ff99;
+  --t-border:      #ffe06620;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

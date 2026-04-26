@@ -1,0 +1,6 @@
+/blog/*          /en/blog/:splat   301
+/about           /en/about         301
+/now             /en/now           301
+/uses            /en/uses          301
+/projects        /en/projects      301
+/talks           /en/talks         301

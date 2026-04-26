@@ -1,0 +1,16 @@
+:root,
+[data-theme="paper"] {
+  --t-bg:          #f5f0e8;
+  --t-bg-alt:      #ebe5d8;
+  --t-fg:          #1a1a1a;
+  --t-fg-muted:    #1a1a1a80;
+  --t-fg-dim:      #1a1a1a33;
+  --t-accent:      #8b3a3a;
+  --t-error:       #cc2222;
+  --t-warning:     #885500;
+  --t-success:     #2a6022;
+  --t-border:      #1a1a1a20;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}

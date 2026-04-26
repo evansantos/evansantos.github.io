@@ -1,0 +1,32 @@
+---
+title: "Telemetry I actually want in my apps"
+date: 2025-06-15
+lang: en
+tags: [observability, dx, tooling]
+dek: "Most telemetry setups tell you what broke after users noticed. Here is what I want instead."
+draft: false
+---
+
+Most observability setups are built for post-mortems. You get an alert after something breaks, you dig through logs, you figure out what happened. That is fine for infrastructure. For product code, I want something different.
+
+## What I actually want
+
+**Error context, not just stack traces.** When a component throws, I want to know the user's state at that moment: what route they were on, what they had typed, which feature flag was active. A raw stack trace tells me where — it rarely tells me why.
+
+**Slow interaction tracking.** React's Profiler API, wrapped in something like `@vercel/analytics`, can flag renders over 50ms. I care more about the interactions that felt slow to a real user than the ones that took the most CPU time on a benchmark.
+
+**Meaningful events, not page views.** "User viewed `/dashboard`" is noise. "User exported a report for the third time this week" is signal. Pick three to five events that map to value delivery and track those.
+
+## The setup I keep returning to
+
+1. A global error boundary that captures context with `@sentry/react` — or a tiny custom one that POSTs to an endpoint I control.
+2. A `track()` wrapper around one function call per high-value action.
+3. Web Vitals via the `web-vitals` package, sent to whatever analytics backend.
+
+That covers 90% of the signal I ever act on.
+
+## The trap
+
+Adding more instrumentation does not improve observability. It improves data volume. I have worked on codebases where every click fired an event — the dashboard was a wall of numbers nobody read.
+
+Measure what you will act on. Delete everything else.

@@ -1,0 +1,16 @@
+:root,
+[data-theme="amber"] {
+  --t-bg:          #0f0a00;
+  --t-bg-alt:      #1a1200;
+  --t-fg:          #ffb300;
+  --t-fg-muted:    #ffb30080;
+  --t-fg-dim:      #ffb30033;
+  --t-accent:      #ff6600;
+  --t-error:       #ff4444;
+  --t-warning:     #ffdd00;
+  --t-success:     #40bf40;
+  --t-border:      #ffb30020;
+  --t-font-mono:   'Courier New', 'Courier', monospace;
+  --t-font-size:   0.95rem;
+  --t-line-height: 1.5;
+}
