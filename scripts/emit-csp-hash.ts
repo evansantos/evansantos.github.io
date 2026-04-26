@@ -5,27 +5,13 @@ import { join } from 'node:path';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
+// ─── FOUC script (pre-build: generates _fouc.ts for index.astro) ──────────────
+
 // BYTE-STABLE — do NOT reformat or modify this string without re-running this script
 const FOUC_SCRIPT =
   `(function(){try{var s=JSON.parse(localStorage.getItem('evandro.state.v1')||'{}');` +
   `if(s.theme)document.documentElement.dataset.theme=s.theme;}catch(e){}})();`;
 
-const hash   = createHash('sha256').update(FOUC_SCRIPT).digest('base64');
-const sha256 = `'sha256-${hash}'`;
-
-const headersPath = join(ROOT, 'public/_headers');
-const current     = readFileSync(headersPath, 'utf-8');
-
-// Replace the script-src directive
-const updated = current.replace(
-  /script-src [^;]+;/,
-  `script-src 'self' ${sha256};`,
-);
-
-writeFileSync(headersPath, updated);
-console.log(`[csp] script-src hash → ${sha256}`);
-
-// Emit the script constant so index.astro can inline it
 const scriptPath = join(ROOT, 'src/terminal/_fouc.ts');
 writeFileSync(
   scriptPath,
@@ -33,3 +19,35 @@ writeFileSync(
   `export const FOUC_SCRIPT = ${JSON.stringify(FOUC_SCRIPT)};\n`,
 );
 console.log('[csp] wrote src/terminal/_fouc.ts');
+
+// ─── Post-build: scan dist/index.html for all inline scripts ──────────────────
+
+const distHtml = join(ROOT, 'dist/index.html');
+let html: string;
+try {
+  html = readFileSync(distHtml, 'utf-8');
+} catch {
+  // Running pre-build (dist doesn't exist yet) — re-runs automatically as postbuild
+  console.log('[csp] dist/index.html not found — skipping hash update (pre-build run)');
+  process.exit(0);
+}
+
+const inlineScriptRe = /<script(?:[^>]*)>([\s\S]*?)<\/script>/g;
+const hashes: string[] = [];
+for (const match of html.matchAll(inlineScriptRe)) {
+  const content = match[1].trim();
+  if (!content) continue;
+  hashes.push(`'sha256-${createHash('sha256').update(content).digest('base64')}'`);
+}
+
+const directive = `script-src 'self' ${hashes.join(' ')};`;
+
+for (const headersPath of [join(ROOT, 'public/_headers'), join(ROOT, 'dist/_headers')]) {
+  try {
+    const current = readFileSync(headersPath, 'utf-8');
+    writeFileSync(headersPath, current.replace(/script-src [^;]+;/, directive));
+    console.log(`[csp] updated ${headersPath.replace(ROOT, '')}`);
+  } catch { /* dist/_headers absent on first pre-build run */ }
+}
+
+console.log(`[csp] script-src → ${hashes.length} hash(es)`);

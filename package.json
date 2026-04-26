@@ -11,6 +11,7 @@
     "prebuild": "tsx scripts/build-fixture.ts && tsx scripts/emit-csp-hash.ts",
     "dev": "astro dev",
     "build": "astro build",
+    "postbuild": "tsx scripts/emit-csp-hash.ts",
     "preview": "astro preview",
     "format": "oxfmt src",
     "lint": "oxlint src",
